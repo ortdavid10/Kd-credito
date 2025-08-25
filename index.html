@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma MiniSuper Créditos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .transition-all {
+            transition: all 0.2s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Main Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-indigo-700 mb-2">MiniSuper Créditos</h1>
+            <p class="text-gray-600">Gestión de créditos para pequeños negocios</p>
+        </header>
+
+        <!-- Login Screen -->
+        <div id="loginScreen" class="bg-white rounded-xl shadow-md p-8 fade-in">
+            <div class="text-center mb-8">
+                <i class="fas fa-store-alt text-6xl text-indigo-500 mb-4"></i>
+                <h2 class="text-2xl font-semibold text-gray-800">Selecciona tu rol</h2>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <button onclick="showOwnerLogin()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2">
+                    <i class="fas fa-user-tie"></i>
+                    Dueño de Negocio
+                </button>
+                <button onclick="showAdminLogin()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-6 rounded-lg transition-all flex items-center justify-center gap-2">
+                    <i class="fas fa-user-shield"></i>
+                    Administrador
+                </button>
+            </div>
+        </div>
+
+        <!-- Admin Login -->
+        <div id="adminLogin" class="hidden bg-white rounded-xl shadow-md p-8 fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    <i class="fas fa-user-shield text-indigo-500"></i>
+                    Acceso Administrador
+                </h2>
+                <button onclick="backToMain()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="adminUser" class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
+                    <input type="text" id="adminUser" placeholder="Ingresa tu usuario" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="adminPass" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                    <input type="password" id="adminPass" placeholder="Ingresa tu contraseña" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <p id="adminError" class="text-red-500 text-sm"></p>
+                
+                <button onclick="loginAdmin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-all">
+                    Iniciar Sesión
+                </button>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="adminPanel" class="hidden bg-white rounded-xl shadow-md p-6 fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    <i class="fas fa-tachometer-alt text-indigo-500"></i>
+                    Panel Administrador
+                </h2>
+                <button onclick="logoutAdmin()" class="text-gray-500 hover:text-gray-700 flex items-center gap-1">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Salir
+                </button>
+            </div>
+            
+            <div class="mb-8 bg-indigo-50 p-4 rounded-lg">
+                <h3 class="text-lg font-medium text-indigo-800 mb-3 flex items-center gap-2">
+                    <i class="fas fa-store"></i>
+                    Agregar Nueva Tienda
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                        <input type="text" id="tiendaNombre" placeholder="Nombre de la tienda" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
+                        <input type="text" id="tiendaLugar" placeholder="Ubicación" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Usuario Dueño</label>
+                        <input type="text" id="tiendaUser" placeholder="Usuario para el dueño" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                        <input type="password" id="tiendaPass" placeholder="Contraseña para el dueño" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+                
+                <button onclick="agregarTienda()" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-all">
+                    <i class="fas fa-plus mr-2"></i>Agregar Tienda
+                </button>
+            </div>
+            
+            <div>
+                <h3 class="text-lg font-medium text-gray-800 mb-3 flex items-center gap-2">
+                    <i class="fas fa-list-ul text-indigo-500"></i>
+                    Tiendas Registradas
+                </h3>
+                
+                <div id="tiendasList" class="space-y-3">
+                    <!-- Tiendas will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Owner Login -->
+        <div id="ownerLogin" class="hidden bg-white rounded-xl shadow-md p-8 fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                    <i class="fas fa-user-tie text-indigo-500"></i>
+                    Acceso Dueño
+                </h2>
+                <button onclick="backToMain()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="ownerUser" class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
+                    <input type="text" id="ownerUser" placeholder="Ingresa tu usuario" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="ownerPass" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                    <input type="password" id="ownerPass" placeholder="Ingresa tu contraseña" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <p id="ownerError" class="text-red-500 text-sm"></p>
+                
+                <button onclick="loginOwner()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-all">
+                    Iniciar Sesión
+                </button>
+            </div>
+        </div>
+
+        <!-- Owner Panel -->
+        <div id="ownerPanel" class="hidden bg-white rounded-xl shadow-md p-6 fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+                        <i class="fas fa-store text-indigo-500"></i>
+                        Panel Dueño: <span id="tiendaNameDisplay" class="text-indigo-600"></span>
+                    </h2>
+                    <p id="tiendaLocation" class="text-gray-500 text-sm"></p>
+                </div>
+                <button onclick="logoutOwner()" class="text-gray-500 hover:text-gray-700 flex items-center gap-1">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Salir
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <div class="flex flex-col md:flex-row gap-2">
+                    <input type="text" id="buscador" placeholder="Buscar cliente por nombre o cédula" 
+                        class="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <button onclick="buscarCliente()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-all">
+                        <i class="fas fa-search mr-2"></i>Buscar
+                    </button>
+                </div>
+                
+                <div id="resultadosBuscador" class="mt-4 space-y-3">
+                    <!-- Search results will appear here -->
+                </div>
+            </div>
+            
+            <div class="bg-indigo-50 p-4 rounded-lg">
+                <h3 class="text-lg font-medium text-indigo-800 mb-3 flex items-center gap-2">
+                    <i class="fas fa-user-plus"></i>
+                    Agregar Nuevo Cliente
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+                        <input type="text" id="clienteNombre" placeholder="Nombre del cliente" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Cédula</label>
+                        <input type="text" id="clienteCedula" placeholder="Número de cédula" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+                
+                <button onclick="agregarCliente()" class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-all">
+                    <i class="fas fa-plus mr-2"></i>Agregar Cliente
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos iniciales
+        let adminCredenciales = { user: "Ortdavid10", pass: "operador2864" };
+        let tiendas = [
+            {nombre: "MiniMarket El Buen Precio", lugar: "Av. Principal #123", user: "dueno1", pass: "clave123"},
+            {nombre: "Super Ahorro", lugar: "Calle Secundaria #456", user: "dueno2", pass: "clave456"}
+        ];
+        
+        let clientes = [
+            {nombre: "Juan Pérez", cedula: "123456789", celular: "", correo: "", deudas: []},
+            {nombre: "María González", cedula: "987654321", celular: "", correo: "", deudas: []},
+            {nombre: "Catherine Guerra", cedula: "1122334455", celular: "", correo: "", deudas: [
+                {monto: 150.50, fecha: "2023-11-15", descripcion: "Compra de abarrotes", tienda: "MiniMarket El Buen Precio"},
+                {monto: 75.25, fecha: "2023-12-03", descripcion: "Licores", tienda: "MiniMarket El Buen Precio"}
+            ]}
+        ];
+
+        // Funciones de navegación
+        function showAdminLogin() {
+            document.getElementById("adminLogin").classList.remove("hidden");
+            document.getElementById("loginScreen").classList.add("hidden");
+        }
+        
+        function showOwnerLogin() {
+            document.getElementById("ownerLogin").classList.remove("hidden");
+            document.getElementById("loginScreen").classList.add("hidden");
+        }
+        
+        function backToMain() {
+            document.getElementById("adminLogin").classList.add("hidden");
+            document.getElementById("ownerLogin").classList.add("hidden");
+            document.getElementById("loginScreen").classList.remove("hidden");
+            document.getElementById("adminError").innerText = "";
+            document.getElementById("ownerError").innerText = "";
+        }
+
+        // Admin login
+        function loginAdmin() {
+            let user = document.getElementById("adminUser").value;
+            let pass = document.getElementById("adminPass").value;
+            
+            if(user === adminCredenciales.user && pass === adminCredenciales.pass) {
+                document.getElementById("adminLogin").classList.add("hidden");
+                document.getElementById("adminPanel").classList.remove("hidden");
+                actualizarTiendasList();
+            } else {
+                document.getElementById("adminError").innerText = "Nombre de usuario o contraseña incorrecto";
+            }
+        }
+
+        // Agregar tienda
+        function agregarTienda() {
+            let nombre = document.getElementById("tiendaNombre").value;
+            let lugar = document.getElementById("tiendaLugar").value;
+            let user = document.getElementById("tiendaUser").value;
+            let pass = document.getElementById("tiendaPass").value;
+            
+            if(nombre && lugar && user && pass) {
+                tiendas.push({nombre, lugar, user, pass});
+                actualizarTiendasList();
+                
+                // Limpiar campos
+                document.getElementById("tiendaNombre").value = "";
+                document.getElementById("tiendaLugar").value = "";
+                document.getElementById("tiendaUser").value = "";
+                document.getElementById("tiendaPass").value = "";
+                
+                // Mostrar notificación
+                showNotification('Tienda agregada correctamente', 'success');
+            } else {
+                showNotification('Por favor complete todos los campos', 'error');
+            }
+        }
+
+        // Mostrar tiendas registradas
+        function actualizarTiendasList() {
+            let lista = document.getElementById("tiendasList");
+            lista.innerHTML = "";
+            
+            if(tiendas.length === 0) {
+                lista.innerHTML = `
+                    <div class="bg-gray-100 p-4 rounded-lg text-center text-gray-500">
+                        <i class="fas fa-store-slash text-2xl mb-2"></i>
+                        <p>No hay tiendas registradas</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            tiendas.forEach((t, i) => {
+                let div = document.createElement("div");
+                div.className = "bg-white p-4 rounded-lg shadow-sm border border-gray-200 card-hover transition-all";
+                div.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-medium text-gray-800">${t.nombre}</h4>
+                            <p class="text-sm text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i>${t.lugar}</p>
+                            <div class="mt-2 text-xs text-gray-400">
+                                <span class="mr-3"><i class="fas fa-user"></i> ${t.user}</span>
+                                <span><i class="fas fa-key"></i> ${'•'.repeat(t.pass.length)}</span>
+                            </div>
+                        </div>
+                        <button onclick="eliminarTienda(${i})" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                `;
+                lista.appendChild(div);
+            });
+        }
+
+        // Eliminar tienda
+        function eliminarTienda(index) {
+            if(confirm("¿Está seguro de eliminar esta tienda?")) {
+                tiendas.splice(index, 1);
+                actualizarTiendasList();
+                showNotification('Tienda eliminada correctamente', 'success');
+            }
+        }
+
+        // Logout Admin
+        function logoutAdmin() {
+            document.getElementById("adminPanel").classList.add("hidden");
+            document.getElementById("adminUser").value = "";
+            document.getElementById("adminPass").value = "";
+            document.getElementById("adminError").innerText = "";
+            backToMain();
+        }
+
+        // Owner login
+        let currentOwner = null;
+        function loginOwner() {
+            let user = document.getElementById("ownerUser").value;
+            let pass = document.getElementById("ownerPass").value;
+            let tienda = tiendas.find(t => t.user === user && t.pass === pass);
+            
+            if(tienda) {
+                currentOwner = tienda;
+                document.getElementById("ownerLogin").classList.add("hidden");
+                document.getElementById("ownerPanel").classList.remove("hidden");
+                document.getElementById("tiendaNameDisplay").innerText = tienda.nombre;
+                document.getElementById("tiendaLocation").innerText = tienda.lugar;
+                document.getElementById("ownerError").innerText = "";
+                document.getElementById("buscador").value = "";
+                document.getElementById("resultadosBuscador").innerHTML = "";
+            } else {
+                document.getElementById("ownerError").innerText = "Nombre de usuario o contraseña incorrecto";
+            }
+        }
+
+        // Logout Owner
+        function logoutOwner() {
+            currentOwner = null;
+            document.getElementById("ownerPanel").classList.add("hidden");
+            document.getElementById("ownerUser").value = "";
+            document.getElementById("ownerPass").value = "";
+            document.getElementById("ownerError").innerText = "";
+            backToMain();
+        }
+
+        // Configuración Airtable
+        const API_KEY = "patLzyXrqLw52WK38.4b0ecc0ad7ad9e14564da36876a3991ef858520f24c9ceaf09e2cfdc28d9f94a";
+        const BASE_ID = "appJX0qQoSlr8y3xD"; // ID de la base de Airtable
+        const TABLA_CLIENTES = "Clientes";
+
+        // Agregar cliente
+        async function agregarCliente() {
+            let nombre = document.getElementById("clienteNombre").value;
+            let cedula = document.getElementById("clienteCedula").value;
+            
+            if(!nombre || !cedula) {
+                showNotification('Por favor complete todos los campos obligatorios', 'error');
+                return;
+            }
+            
+            let cliente = clientes.find(c => c.cedula === cedula);
+            
+            if(!cliente) {
+                try {
+                    // Guardar en Airtable
+                    const response = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLA_CLIENTES}`, {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${API_KEY}`,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            fields: {
+                                "Nombre": nombre,
+                                "Cédula": cedula,
+                                "Tienda": currentOwner.nombre,
+                                "Fecha de registro": new Date().toISOString()
+                            }
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    // Guardar localmente
+                    clientes.push({nombre, cedula, deudas: []});
+                    document.getElementById("clienteNombre").value = "";
+                    document.getElementById("clienteCedula").value = "";
+                    
+                    showNotification('Cliente agregado correctamente', 'success');
+                } catch (error) {
+                    console.error("Error al guardar en Airtable:", error);
+                    showNotification('Error al guardar el cliente', 'error');
+                }
+            } else {
+                showNotification('Cliente ya registrado', 'warning');
+            }
+        }
+
+        // Buscar cliente
+        function buscarCliente() {
+            let query = document.getElementById("buscador").value.toLowerCase();
+            let resultados = clientes.filter(c => 
+                c.nombre.toLowerCase().includes(query) || 
+                c.cedula.includes(query)
+            );
+            
+            let contenedor = document.getElementById("resultadosBuscador");
+            contenedor.innerHTML = "";
+            
+            if(resultados.length === 0) {
+                contenedor.innerHTML = `
+                    <div class="bg-gray-100 p-4 rounded-lg text-center text-gray-500">
+                        <i class="fas fa-user-slash text-2xl mb-2"></i>
+                        <p>No se encontraron clientes</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            resultados.forEach(c => {
+                let div = document.createElement("div");
+                div.className = "bg-white p-4 rounded-lg shadow-sm border border-gray-200 card-hover transition-all";
+                div.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-medium text-gray-800">${c.nombre}</h4>
+                            <p class="text-sm text-gray-500"><i class="fas fa-id-card mr-1"></i>${c.cedula}</p>
+                            ${c.celular ? `<p class="text-sm text-gray-500"><i class="fas fa-phone mr-1"></i>${c.celular}</p>` : ''}
+                            ${c.correo ? `<p class="text-sm text-gray-500"><i class="fas fa-envelope mr-1"></i>${c.correo}</p>` : ''}
+                            
+                            <!-- Mostrar todas las deudas del cliente -->
+                            ${c.deudas.map(d => `
+                                <div class="mt-2 text-sm ${d.tienda === currentOwner.nombre ? 'text-red-600 bg-red-50' : 'text-orange-600 bg-orange-50'} p-2 rounded">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>
+                                    Debe en ${d.tienda} (${d.fecha})
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="agregarDeuda('${c.cedula}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
+                                Debe
+                            </button>
+                            <button onclick="pagarDeuda('${c.cedula}')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">
+                                Pagado
+                            </button>
+                        </div>
+                    </div>
+                `;
+                contenedor.appendChild(div);
+            });
+        }
+
+        // Pagar todas las deudas del cliente en esta tienda
+        function pagarDeuda(cedula) {
+            let cliente = clientes.find(c => c.cedula === cedula);
+            if(!cliente) return;
+            
+            let deudasTienda = cliente.deudas.filter(d => d.tienda === currentOwner.nombre);
+            if(deudasTienda.length === 0) {
+                showNotification('El cliente no tiene deudas en esta tienda', 'info');
+                return;
+            }
+            
+            if(confirm(`¿Marcar TODAS las deudas en ${currentOwner.nombre} como pagadas?`)) {
+                // Eliminar solo las deudas de esta tienda
+                cliente.deudas = cliente.deudas.filter(d => d.tienda !== currentOwner.nombre);
+                showNotification('Todas las deudas en esta tienda marcadas como pagadas', 'success');
+                buscarCliente();
+            }
+        }
+
+        // Agregar deuda a cliente
+        function agregarDeuda(cedula) {
+            let cliente = clientes.find(c => c.cedula === cedula);
+            if(!cliente) return;
+            
+            let fechaActual = new Date().toISOString().split('T')[0];
+            cliente.deudas.push({
+                monto: 0, // Puedes agregar un campo para el monto si lo necesitas
+                fecha: fechaActual,
+                descripcion: "Debe en " + currentOwner.nombre,
+                tienda: currentOwner.nombre
+            });
+            
+            showNotification('Deuda registrada', 'success');
+            buscarCliente();
+        }
+
+        // Mostrar notificación
+        function showNotification(message, type) {
+            let color = 'bg-indigo-500';
+            if(type === 'error') color = 'bg-red-500';
+            if(type === 'warning') color = 'bg-yellow-500';
+            
+            let notification = document.createElement("div");
+            notification.className = `fixed bottom-4 right-4 ${color} text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 z-50`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'exclamation-triangle'}"></i>
+                ${message}
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add("opacity-0", "transition-opacity", "duration-300");
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Agregar algunos datos de ejemplo si no hay
+            if(tiendas.length === 0) {
+                tiendas.push(
+                    {nombre: "MiniMarket Ejemplo", lugar: "Calle Ejemplo #123", user: "demo", pass: "demo123"}
+                );
+            }
+            
+            if(clientes.length === 0) {
+                clientes.push(
+                    {nombre: "Cliente Ejemplo", cedula: "000000000", deudas: []}
+                );
+            }
+        });
+    </script>
+<p style="border-radius: 8px; text-align: center; font-size: 12px; color: #fff; margin-top: 16px;position: fixed; left: 8px; bottom: 8px; z-index: 10; background: rgba(0, 0, 0, 0.8); padding: 4px 8px;">Made with <img src="https://enzostvs-deepsite.hf.space/logo.svg" alt="DeepSite Logo" style="width: 16px; height: 16px; vertical-align: middle;display:inline-block;margin-right:3px;filter:brightness(0) invert(1);"><a href="https://enzostvs-deepsite.hf.space" style="color: #fff;text-decoration: underline;" target="_blank" >DeepSite</a> - 🧬 <a href="https://enzostvs-deepsite.hf.space?remix=Ortkathy/creditodk" style="color: #fff;text-decoration: underline;" target="_blank" >Remix</a></p></body>
+</html>
